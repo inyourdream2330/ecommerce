@@ -25,7 +25,7 @@ function Categories() {
       );
       setCategory("");
       setCallback(!callback);
-      alert("Succ");
+      alert("Success");
     } catch (err) {
       alert(err.message.data.msg);
     }

@@ -5,6 +5,7 @@ import { useContext } from "react";
 import { GlobalState } from "../../../GlobalState";
 import Loading from "../utils/loading/Loading";
 import { useHistory, useParams } from "react-router-dom";
+import Rotate from "./Rotate";
 
 function CreateProduct() {
   const initialState = {
@@ -15,20 +16,58 @@ function CreateProduct() {
     content:
       "Nyan nyan Nyan nyan Nyan nyan Nyan nyan Nyan nyan Nyan nyan Nyan nyan ",
     category: "",
-    id: "",
+    _id: "",
+    images: "1",
   };
 
   const state = useContext(GlobalState);
   const [product, setProduct] = useState(initialState);
   const [categories] = state.CategoriesAPI.categories;
   const [onEdit, setOnEdit] = useState(false);
-  const [images, setImages] = useState(false);
   const [isAdmin] = state.UserAPI.isAdmin;
   const [loading, setLoading] = useState(false);
   const [token] = state.token;
   const history = useHistory();
   const param = useParams();
-  const [products, setProducts] = state.ProductsAPI.products;
+  const [products] = state.ProductsAPI.products;
+  const [previewImage, setPrevireImage] = useState();
+  const [imagesFile, setImagesFile] = useState(false);
+  const [isChangeImage, setIsChangeImage] = useState(false);
+  const [callback, setCallback] = state.ProductsAPI.callback;
+
+  const imageHandler = (e) => {
+    if (!isAdmin) {
+      return alert("Bạn không phải admin");
+    }
+    const file = e.target.files[0];
+    if (!file) {
+      return alert("File bị lỗi hoặc không tồn tại");
+    }
+
+    if (file.size > 1024 * 1024) {
+      return alert("File quá lớn, chỉ <= 1mb");
+    }
+
+    if (file.type !== "image/jpeg" && file.type !== "image/png") {
+      return alert("Không đúng định dạng ảnh (jpg/jpeg/png");
+    }
+    setLoading(true);
+    setPrevireImage(URL.createObjectURL(file));
+    setImagesFile(file);
+    setLoading(false);
+    if (onEdit) {
+      setIsChangeImage(true);
+    }
+
+    // const reader = new FileReader();
+    // reader.readAsDataURL(e.target.files[0]);
+    // reader.onload = () => {
+    //   if (reader.readyState === 2) {
+    //     previewImage(reader.result);
+    //     console.log(previewImage);
+    //   }
+    // };
+  };
 
   useEffect(() => {
     if (param.id) {
@@ -36,18 +75,18 @@ function CreateProduct() {
       products.forEach((product) => {
         if (product._id === param.id) {
           setProduct(product);
-          setImages(product.images);
+          setPrevireImage(product.images.url);
         }
       });
     } else {
       setOnEdit(false);
       setProduct(initialState);
-      setImages(false);
+      setPrevireImage(false);
     }
   }, [param.id, products]);
 
   const styleUpload = {
-    display: images ? "block" : "none",
+    display: previewImage ? "block" : "none",
   };
 
   const handleChangeInput = (e) => {
@@ -55,27 +94,11 @@ function CreateProduct() {
     setProduct({ ...product, [name]: value });
   };
 
-  const handleUpload = async (e) => {
+  const uploadImages = async (e) => {
     e.preventDefault();
     try {
-      if (!isAdmin) {
-        return alert("Bạn không phải admin");
-      }
-      const file = e.target.files[0];
-      if (!file) {
-        return alert("File bị lỗi hoặc không tồn tại");
-      }
-
-      if (file.size > 1024 * 1024) {
-        return alert("File quá lớn, chỉ <= 1mb");
-      }
-
-      if (file.type !== "image/jpeg" && file.type !== "image/png") {
-        return alert("Không đúng định dạng ảnh (jpg/jpeg/png");
-      }
-
       let formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", imagesFile);
       setLoading(true);
       const res = await axios.post("/api/upload", formData, {
         headers: {
@@ -84,23 +107,7 @@ function CreateProduct() {
         },
       });
       setLoading(false);
-      setImages(res.data);
-    } catch (err) {
-      alert(err.response.data.msg);
-    }
-  };
-
-  const handleDestroy = async () => {
-    try {
-      if (!isAdmin) {
-        return alert("Bạn không phải admin");
-      }
-      const res = await axios.post(
-        "/api/destroy",
-        { public_id: images.public_id },
-        { headers: { Authorization: token } }
-      );
-      setImages(false);
+      return res.data;
     } catch (err) {
       alert(err.response.data.msg);
     }
@@ -108,23 +115,42 @@ function CreateProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       if (!isAdmin) {
         return alert("Bạn không phải admin");
       }
-      if (!images) {
+      if (!previewImage) {
         return alert("Chưa có ảnh sản phẩm");
       }
 
-      await axios.post(
-        "/api/products",
-        { ...product, images },
-        {
-          headers: { Authorization: token },
-        }
-      );
+      if (onEdit) {
+        const images = isChangeImage ? await uploadImages(e) : product.images;
+        await axios.put(
+          `/api/products/${product._id}`,
+          { ...product, images },
+          {
+            headers: { Authorization: token },
+          }
+        );
+        await axios.post(
+          "/api/destroy",
+          { public_id: product.images.public_id },
+          { headers: { Authorization: token } }
+        );
+      } else {
+        const images = await uploadImages(e);
+        await axios.post(
+          "/api/products",
+          { ...product, images },
+          {
+            headers: { Authorization: token },
+          }
+        );
+      }
+
       setProduct(initialState);
-      setImages(false);
+      setCallback(!callback);
       history.push("/");
     } catch (err) {
       alert(err.response.data.msg);
@@ -133,15 +159,17 @@ function CreateProduct() {
   return (
     <div className="create_product">
       <div className="upload">
-        <input type="file" name="file" id="file_up" onChange={handleUpload} />
+        <input type="file" name="file" id="file_up" onChange={imageHandler} />
         {loading ? (
           <div id="file_img">
             <Loading />
           </div>
         ) : (
           <div id="file_img" style={styleUpload}>
-            <img src={images ? images.url : ""} alt="" />
-            <span onClick={handleDestroy}>X</span>
+            <img src={previewImage ? previewImage : ""} alt="" />
+            <label htmlFor="file_up">
+              <Rotate />
+            </label>
           </div>
         )}
       </div>
