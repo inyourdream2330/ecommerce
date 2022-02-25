@@ -21,7 +21,7 @@
   border: 1px solid rgb(3, 165, 206);
 }
 
-.login-page form .row {
+.login-page form .login-btn-row {
   display: flex;
   justify-content: space-between;
   align-items: center;

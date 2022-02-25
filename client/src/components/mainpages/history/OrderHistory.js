@@ -32,8 +32,7 @@ function OrderHistory() {
     <div className="history-page">
       <h2>History</h2>
       <h4>
-        {isAdmin ? "Số lượng đơn hàng" : "Tổng số đơn hàng bạn đã đặt"} :{" "}
-        {history.length}
+        {isAdmin ? "Total odered" : "Total your odered"} : {history.length}
       </h4>
       <div>
         <table>

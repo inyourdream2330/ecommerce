@@ -83,8 +83,8 @@
 }
 
 .create_product form input,
-textarea,
-select {
+.create_product form textarea,
+.create_product form select {
   width: 100%;
   min-height: 40px;
   padding: 0 5px;
@@ -102,4 +102,8 @@ textarea {
   color: white;
   text-transform: uppercase;
   font-weight: 700;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  display: flex;
 }

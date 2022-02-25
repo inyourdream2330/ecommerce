@@ -42,7 +42,7 @@ function Login() {
           onChange={onChangeInput}
           autoComplete="on"
         />
-        <div className="row">
+        <div className="login-btn-row">
           <button type="submit">Login</button>
           <Link to="/register">Register</Link>
         </div>

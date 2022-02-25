@@ -16,6 +16,7 @@ code {
 
 .App {
   max-width: 1230px;
+  min-width: 425px;
   min-height: 100vh;
   margin: auto;
   padding: 0 20px;
@@ -40,16 +41,24 @@ button {
   cursor: pointer;
 }
 
+/* ---------------- Load more ---------------- */
+.load_more {
+  text-align: center;
+}
+
+.load_more button {
+  padding: 10px 25px;
+  margin-bottom: 20px;
+  border: 1px solid #555;
+  text-transform: capitalize;
+}
+
 /* ----------------- Header ----------------- */
 
 @import url("./components/headers//Header.css");
 
 /* ----------------- Products ----------------- */
 @import url("./components/mainpages/products/products.css");
-
-/* --------------------- Product Item --------------------- */
-
-@import url("./components/mainpages/utils/product_item/productitem.css");
 
 /* --------------------- Detail Product  --------------------- */
 
@@ -72,3 +81,105 @@ button {
 /* ----------------- Create Product ----------------- */
 
 @import url("./components/mainpages/create_product/createProduct.css");
+
+/* ----------------- Responsive ----------------- */
+@media (max-width: 980px) {
+  header .logo {
+    min-width: 115px;
+    flex: none;
+  }
+  header .ul {
+    padding: 10px 0;
+  }
+}
+
+@media (max-width: 700px) {
+  header ul {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    opacity: 0.98;
+    z-index: 99;
+    transition: 0.3s ease-out;
+  }
+
+  header .menu {
+    display: block;
+    cursor: pointer;
+  }
+
+  header ul li .menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+
+  header {
+    justify-content: space-between;
+  }
+
+  .filter-menu .f-row span,
+  .filter-menu .s-row span {
+    display: none;
+  }
+
+  .filter-menu .f-row select,
+  .filter-menu .s-row select {
+    width: 100%;
+  }
+  .filter-menu .f-row {
+    max-width: 150px;
+  }
+}
+@media (max-width: 580px) {
+  .filter-menu .f-row,
+  .filter-menu .s-row {
+    width: 100%;
+    max-width: none;
+  }
+
+  .filter-menu input {
+    margin: 0;
+  }
+
+  .filter-menu .f-row,
+  .filter-menu .s-row,
+  .filter-menu input {
+    margin: 5px 0;
+  }
+  .detail {
+    font-size: 100%;
+    padding: 0;
+  }
+
+  .create_product .upload {
+    margin: 20px 0;
+  }
+}
+
+@media (max-width: 380px) {
+  header .cart-icon {
+    padding-left: 40vw;
+  }
+
+  .delete-all {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    text-align: center;
+  }
+
+  .delete-all button {
+    transform: translateY(0px) !important;
+  }
+  .delete-all input {
+    transform: translateY(0px) !important;
+  }
+}

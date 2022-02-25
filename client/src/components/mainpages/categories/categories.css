@@ -4,6 +4,7 @@
   flex-wrap: wrap;
   justify-content: space-between;
   margin: 30px auto;
+  flex-direction: column;
 }
 
 .categories form {
@@ -20,7 +21,7 @@
 }
 
 .categories input,
-button {
+.categories .category-btn {
   height: 35px;
   border: none;
   outline: none;
@@ -31,7 +32,7 @@ button {
   width: 210px;
 }
 
-.categories button {
+.categories .category-btn {
   width: 70px;
   background: #555;
   color: white;
@@ -39,16 +40,23 @@ button {
 }
 
 .categories .row {
-  max-width: 270px;
+  max-width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
+  margin: 5px;
 }
 .categories .row p {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.list_categories {
+  display: grid;
+  /* grid-template-columns: 25% 25% 25% 25%; */
+  grid-template-columns: 33% 33% 33%;
 }

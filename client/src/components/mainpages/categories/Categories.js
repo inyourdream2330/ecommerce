@@ -1,6 +1,7 @@
 import axios from "axios";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { GlobalState } from "../../../GlobalState";
+import LoadMoreRelated from "../detail_product/LoadMoreRelated";
 
 function Categories() {
   const state = useContext(GlobalState);
@@ -10,12 +11,21 @@ function Categories() {
   const [callback, setCallback] = state.CategoriesAPI.callback;
   const [categoryDialog, setCategoryDialog] =
     state.CategoriesAPI.categoryDialog;
+  const [loadMore, setLoadMore] = useState(6);
 
+  useEffect(() => {
+    setLoadMore(6);
+  }, []);
+
+  const handleLoadMore = () => {
+    setLoadMore(loadMore + 6);
+  };
   const showCategoryDialog = (action, id) => {
     setCategoryDialog({ isShow: true, action: action, categoryId: id });
   };
 
   const createCategory = async (e) => {
+    debugger;
     e.preventDefault();
     try {
       await axios.post(
@@ -45,21 +55,33 @@ function Categories() {
           />
           <button type="submit">Save</button>
         </form>
-        <div>
-          {categories.map((item) => (
-            <div className="row" key={item._id}>
-              <p>{item.name}</p>
-              <div>
-                <button onClick={(e) => showCategoryDialog("edit", item._id)}>
-                  Edit
-                </button>
-                <button onClick={(e) => showCategoryDialog("delete", item._id)}>
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="list_categories">
+          {categories.map(
+            (item, index) =>
+              index < loadMore && (
+                <div className="row" key={item._id}>
+                  <p>{item.name}</p>
+                  <div>
+                    <button
+                      className="category-btn"
+                      onClick={(e) => showCategoryDialog("edit", item._id)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="category-btn"
+                      onClick={(e) => showCategoryDialog("delete", item._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )
+          )}
         </div>
+        {categories.length > loadMore && (
+          <LoadMoreRelated handleLoadMore={handleLoadMore} />
+        )}
       </div>
     </>
   );

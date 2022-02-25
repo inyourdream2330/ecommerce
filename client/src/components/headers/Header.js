@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 import { GlobalState } from "../../GlobalState";
 import Menu from "../icon/menu.svg";
@@ -14,16 +14,23 @@ function Header() {
   const [isLogged] = state.UserAPI.isLogged;
   const [isAdmin] = state.UserAPI.isAdmin;
   const [cart] = state.UserAPI.cart;
+  const [menu, setMenu] = useState(false);
 
   const logoutUser = async () => {
     await axios.get("/user/logout");
     window.location.href = "/";
   };
 
+  const closeMenu = () => {
+    setMenu(false);
+  };
+
   const HeaderLink = (path, title) => {
     return (
       <li>
-        <Link to={`${path}`}>{title}</Link>
+        <Link onClick={closeMenu} to={`${path}`}>
+          {title}
+        </Link>
       </li>
     );
   };
@@ -55,23 +62,32 @@ function Header() {
     );
   };
 
+  const toggleMenu = () => {
+    setMenu(!menu);
+  };
+  const styleMenu = {
+    left: menu ? 0 : "-100%",
+  };
+
   return (
     <div>
       <header>
-        <div className="menu">
+        <div className="menu" onClick={toggleMenu}>
           <img src={Menu} alt="" width="30" />
         </div>
         <div className="logo">
           <h1>
-            <Link to="/">{isAdmin ? "Admin Page" : "Meow nyan Shop"}</Link>
+            <Link to="/" onClick={closeMenu}>
+              {isAdmin ? "Admin Page" : "Meow nyan Shop"}
+            </Link>
           </h1>
         </div>
-        <ul>
+        <ul style={styleMenu}>
           {isAdmin ? HeaderLink("/", "Products") : HeaderLink("/", "Shop")}
 
           {isAdmin && adminRouter()}
           {isLogged ? loggedRouter() : HeaderLink("/login", "Login/Register")}
-          <li>
+          <li onClick={toggleMenu}>
             <img src={Close} alt="" width="30" className="menu" />
           </li>
         </ul>

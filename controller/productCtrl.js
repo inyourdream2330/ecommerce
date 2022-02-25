@@ -18,6 +18,8 @@ class APIfeature {
       /\b(gte|gt|lt|lte|regex)\b/g,
       (match) => "$" + match
     );
+    console.log(JSON.parse(queryStr));
+    this.query.find(JSON.parse(queryStr));
     return this;
   }
   sorting() {
@@ -50,7 +52,7 @@ const productsCtrl = {
         msg: "success",
         status: true,
         result: products.length,
-        products: products,
+        products,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });

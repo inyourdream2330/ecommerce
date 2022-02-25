@@ -103,7 +103,9 @@ function CategoryModal() {
         </form>
       ) : (
         <>
-          <Modal.Body>Bạn muốn xoá Category "{category}" không ?</Modal.Body>
+          <Modal.Body>
+            Are you sure to delete "{category}" category ?
+          </Modal.Body>
           <Modal.Footer>
             <Button variant="danger" onClick={deleteCategory}>
               Delete
